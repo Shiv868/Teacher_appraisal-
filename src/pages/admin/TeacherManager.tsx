@@ -1,7 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { User, Mail, Plus, Edit2, Trash } from 'lucide-react';
-import { db } from "../../config/firebaseConfig"; // Assuming the Firebase configuration is set here
-import { collection, getDocs, addDoc, doc, deleteDoc, updateDoc } from 'firebase/firestore';
+import { User, Mail, Plus, Edit2, Trash, Eye } from 'lucide-react';
+import { db } from "../../config/firebaseConfig"; // Ensure Firebase is configured
+import {
+  collection,
+  getDocs,
+  addDoc,
+  doc,
+  deleteDoc,
+  updateDoc,
+  query,
+  where,
+} from "firebase/firestore";
 
 interface Teacher {
   id: string;
@@ -10,6 +19,36 @@ interface Teacher {
   department: string;
   joinDate: string;
 }
+
+interface TeacherDetails {
+  classes: {
+    date: string;
+    period: string;
+    subject: string;
+    topicsCovered: string[];
+    attendanceCount: number;
+  }[];
+  documents: {
+    title: string;
+    type: string;
+    description: string;
+    uploadDate: string;
+    url: string;
+  }[];
+  syllabus: {
+    subject: string;
+    topic: string;
+    completionStatus: number;
+    lastUpdated: string;
+  }[];
+  publications: {
+    title: string;
+    description: string;
+    journal: string;
+    year: string;
+  }[];
+}
+
 
 export default function TeacherManager() {
   const [teachers, setTeachers] = useState<Teacher[]>([]);
@@ -21,24 +60,19 @@ export default function TeacherManager() {
   const [editTeacherId, setEditTeacherId] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [error, setError] = useState('');
+  const [viewMoreId, setViewMoreId] = useState<string | null>(null);
+  const [teacherDetails, setTeacherDetails] = useState<TeacherDetails | null>(null);
 
-  // Departments options
-  const departments = [
-    'CSE', 'IT', 'MECH', 'AIML', 'CSBS', 'AIDS', 'CIVIL', 'EEE', 'ECE'
-  ];
+  const departments = ['CSE', 'IT', 'MECH', 'AIML', 'CSBS', 'AIDS', 'CIVIL', 'EEE', 'ECE'];
 
-  // Fetch teacher data from Firestore on component mount
   useEffect(() => {
     const fetchTeachers = async () => {
       try {
         const querySnapshot = await getDocs(collection(db, 'teachers'));
-        const teachersList: Teacher[] = [];
-        querySnapshot.forEach((doc) => {
-          teachersList.push({
-            id: doc.id,
-            ...doc.data(),
-          } as Teacher);
-        });
+        const teachersList: Teacher[] = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        } as Teacher));
         setTeachers(teachersList);
       } catch (err) {
         console.error("Error fetching teachers: ", err);
@@ -64,49 +98,25 @@ export default function TeacherManager() {
       return;
     }
 
-    const joinDate = new Date().toLocaleDateString(); // Get today's date
+    const joinDate = new Date().toLocaleDateString();
 
     try {
       if (editTeacherId) {
-        // Update an existing teacher
-        await updateDoc(doc(db, 'teachers', editTeacherId), {
-          name,
-          email,
-          department,
-        });
+        await updateDoc(doc(db, 'teachers', editTeacherId), { name, email, department });
 
         setTeachers((prevTeachers) =>
           prevTeachers.map((teacher) =>
-            teacher.id === editTeacherId
-              ? { ...teacher, name, email, department }
-              : teacher
+            teacher.id === editTeacherId ? { ...teacher, name, email, department } : teacher
           )
         );
-        setEditTeacherId(null); // Reset edit mode
+        setEditTeacherId(null);
       } else {
-        // Add a new teacher
-        const docRef = await addDoc(collection(db, 'teachers'), {
-          name,
-          email,
-          department,
-          joinDate,
-          password: 'webcap', // Fixed password for login
-        });
-
-        setTeachers((prevTeachers) => [
-          ...prevTeachers,
-          {
-            id: docRef.id,
-            name,
-            email,
-            department,
-            joinDate,
-          },
-        ]);
+        const docRef = await addDoc(collection(db, 'teachers'), { name, email, department, joinDate });
+        setTeachers((prevTeachers) => [...prevTeachers, { id: docRef.id, name, email, department, joinDate }]);
       }
 
-      setNewTeacher({ name: '', email: '', department: '' }); // Reset form
-      setShowForm(false); // Hide form after successful submission
+      setNewTeacher({ name: '', email: '', department: '' });
+      setShowForm(false);
     } catch (err) {
       setError('Error saving teacher. Please try again.');
     }
@@ -119,7 +129,7 @@ export default function TeacherManager() {
       department: teacher.department,
     });
     setEditTeacherId(teacher.id);
-    setShowForm(true); // Show form in edit mode
+    setShowForm(true);
   };
 
   const handleDeleteTeacher = async (id: string) => {
@@ -132,6 +142,69 @@ export default function TeacherManager() {
     }
   };
 
+  const handleViewMore = async (email: string) => {
+    try {
+      console.log('Fetching teacher details for email:', email);
+  
+      const teacherQuery = query(collection(db, 'teachers'), where('email', '==', email));
+      const querySnapshot = await getDocs(teacherQuery);
+  
+      if (!querySnapshot.empty) {
+        const teacherDoc = querySnapshot.docs[0];
+        const teacherId = teacherDoc.id;
+  
+        // Fetch classes
+        const classesSnapshot = await getDocs(query(collection(db, 'classes'), where('teacherId', '==', teacherId)));
+        const classes = classesSnapshot.docs.map((doc) => ({
+          date: doc.data().date,
+          period: doc.data().period,
+          subject: doc.data().subject,
+          topicsCovered: doc.data().topicsCovered,
+          attendanceCount: doc.data().attendanceCount,
+        }));
+  
+        // Fetch documents
+        const documentsSnapshot = await getDocs(query(collection(db, 'documents'), where('teacherId', '==', teacherId)));
+        const documents = documentsSnapshot.docs.map((doc) => ({
+          title: doc.data().title,
+          type: doc.data().type,
+          description: doc.data().description,
+          uploadDate: doc.data().uploadDate,
+          url: doc.data().url,
+        }));
+  
+        // Fetch syllabus
+        const syllabusSnapshot = await getDocs(query(collection(db, 'syllabus'), where('teacherId', '==', teacherId)));
+        const syllabus = syllabusSnapshot.docs.map((doc) => ({
+          subject: doc.data().subject,
+          topic: doc.data().topic,
+          completionStatus: doc.data().completionStatus,
+          lastUpdated: doc.data().lastUpdated,
+        }));
+  
+        // Fetch publications
+        const publicationsSnapshot = await getDocs(query(collection(db, 'publications'), where('teacherId', '==', teacherId)));
+        const publications = publicationsSnapshot.docs.map((doc) => ({
+          title: doc.data().title,
+          description: doc.data().description,
+          journal: doc.data().journal,
+          year: doc.data().year,
+        }));
+  
+        // Set state with fetched data
+        setTeacherDetails({ classes, documents, syllabus, publications });
+        setViewMoreId(teacherId);
+      } else {
+        setError('Teacher not found.');
+      }
+    } catch (err) {
+      console.error('Error fetching teacher details:', err);
+      setError('Error fetching teacher details. Please try again.');
+    }
+  };
+  
+  
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -140,7 +213,7 @@ export default function TeacherManager() {
           className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
           onClick={() => {
             setShowForm(true);
-            setEditTeacherId(null); // Ensure form is in "add" mode
+            setEditTeacherId(null);
           }}
         >
           <Plus className="w-5 h-5 mr-2" />
@@ -148,7 +221,6 @@ export default function TeacherManager() {
         </button>
       </div>
 
-      {/* Show form to add/edit teacher */}
       {showForm && (
         <div className="bg-white p-6 rounded-lg shadow mb-6">
           <h2 className="text-2xl font-semibold mb-4">
@@ -210,6 +282,7 @@ export default function TeacherManager() {
         </div>
       )}
 
+
       <div className="grid gap-6">
         {teachers.map((teacher) => (
           <div key={teacher.id} className="bg-white p-6 rounded-lg shadow">
@@ -248,10 +321,92 @@ export default function TeacherManager() {
                 <Trash className="w-4 h-4 mr-2 inline-block" />
                 Delete
               </button>
+              <button
+                className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+                onClick={() => handleViewMore(teacher.email)}
+              >
+                <Eye className="w-4 h-4 mr-2 inline-block" />
+                View More
+              </button>
+              
             </div>
-          </div>
-        ))}
+            {viewMoreId === teacher.id && teacherDetails && (
+  <div className="space-y-8 mt-6">
+    <h2 className="text-2xl font-semibold">📋 Teacher Details</h2>
+    <div className="flex flex-wrap gap-4">
+      {/* Classes Card */}
+      <div className="flex-1 max-w-[300px] bg-blue-100 p-4 rounded-md shadow">
+        <h3 className="text-xl font-semibold text-blue-700">Classes</h3>
+        <ul className="mt-2 space-y-2 text-sm">
+          {teacherDetails.classes.length > 0 ? (
+            teacherDetails.classes.map((classItem, idx) => (
+              <li key={idx} className="bg-white p-2 rounded shadow">
+                <strong>Subject:</strong> {classItem.subject}
+              </li>
+            ))
+          ) : (
+            <li>No data found</li>
+          )}
+        </ul>
+      </div>
+      {/* Documents Card */}
+      <div className="flex-1 max-w-[300px] bg-green-100 p-4 rounded-md shadow">
+        <h3 className="text-xl font-semibold text-green-700">Documents</h3>
+        <ul className="mt-2 space-y-2 text-sm">
+          {teacherDetails.documents.length > 0 ? (
+            teacherDetails.documents.map((doc, idx) => (
+              <li key={idx} className="bg-white p-2 rounded shadow">
+                <strong>Title:</strong> {doc.title}
+              </li>
+            ))
+          ) : (
+            <li>No data found</li>
+          )}
+        </ul>
+      </div>
+      {/* Syllabus Card */}
+      <div className="flex-1 max-w-[300px] bg-purple-100 p-4 rounded-md shadow">
+        <h3 className="text-xl font-semibold text-purple-700">Syllabus</h3>
+        <ul className="mt-2 space-y-2 text-sm">
+          {teacherDetails.syllabus.length > 0 ? (
+            teacherDetails.syllabus.map((syllabus, idx) => (
+              <li key={idx} className="bg-white p-2 rounded shadow">
+                <strong>Topic:</strong> {syllabus.topic}
+              </li>
+            ))
+          ) : (
+            <li>No data found</li>
+          )}
+        </ul>
+      </div>
+      {/* Publications Card */}
+      <div className="flex-1 max-w-[300px] bg-yellow-100 p-4 rounded-md shadow">
+        <h3 className="text-xl font-semibold text-yellow-700">Publications</h3>
+        <ul className="mt-2 space-y-2 text-sm">
+          {teacherDetails.publications.length > 0 ? (
+            teacherDetails.publications.map((pub, idx) => (
+              <li key={idx} className="bg-white p-2 rounded shadow">
+                <strong>Title:</strong> {pub.title} - {pub.journal} ({pub.year})
+              </li>
+            ))
+          ) : (
+            <li>No data found</li>
+          )}
+        </ul>
       </div>
     </div>
-  );
+    <button
+      className="mt-4 px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+      onClick={() => setViewMoreId(null)}
+    >
+      Close
+    </button>
+  </div>
+)}
+
+        </div>
+      ))}
+    </div>
+  </div>
+);
 }

@@ -113,7 +113,6 @@ export default function ClassTracker() {
           subject: formData.subject,
           date: formData.date,
           period: formData.period,
-          attendanceCount: formData.attendanceCount,
           topicsCovered: formData.topicsCovered,
         });
       } else {
@@ -123,7 +122,6 @@ export default function ClassTracker() {
           subject: formData.subject,
           date: formData.date,
           period: formData.period,
-          attendanceCount: formData.attendanceCount,
           topicsCovered: formData.topicsCovered,
         };
         const docRef = await addDoc(collection(db, 'classes'), newClass);
@@ -152,7 +150,15 @@ export default function ClassTracker() {
     <div className="space-y-6">
       {/* Header Section */}
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-900">Class Tracker</h1>
+      <div className="flex items-center space-x-4">
+          <button
+            className="p-2 rounded-md hover:bg-gray-200 transition-all md:hidden"
+            aria-label="Menu"
+          >
+         
+          </button>
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">Class Tracker</h1>
+        </div>
         <button
           onClick={() => openModal()}
           className="flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-teal-500 text-white rounded-md hover:opacity-90 transition-opacity duration-300"
@@ -178,10 +184,7 @@ export default function ClassTracker() {
                     <Clock className="w-5 h-5 mr-2" />
                     <span>Period {classPeriod.period}</span>
                   </div>
-                  <div className="flex items-center text-gray-600">
-                    <Users className="w-5 h-5 mr-2" />
-                    <span>{classPeriod.attendanceCount} students present</span>
-                  </div>
+
                   <div className="flex items-center text-gray-600">
                     <BookOpen className="w-5 h-5 mr-2" />
                     <span>{classPeriod.topicsCovered.join(', ')}</span>

@@ -154,10 +154,18 @@ export default function PublicationManager() {
     <div className="space-y-6">
       {/* Header Section */}
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-900">Publication Manager</h1>
+      <div className="flex items-center space-x-4">
+          <button
+            className="p-2 rounded-md hover:bg-gray-200 transition-all md:hidden"
+            aria-label="Menu"
+          >
+         
+          </button>
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">Publications</h1>
+        </div>
         <button
           onClick={() => openModal()}
-          className="flex items-center px-4 py-2 bg-gradient-to-r from-green-500 to-teal-500 text-white rounded-md hover:opacity-90 transition-opacity duration-300"
+          className="flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-teal-500 text-white rounded-md hover:opacity-90 transition-opacity duration-300"
         >
           <Plus className="w-5 h-5 mr-2" />
           Add Publication

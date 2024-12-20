@@ -9,6 +9,7 @@ import DocumentManager from './pages/teacher/DocumentManager';
 import PublicationManager from './pages/teacher/publications';
 import AdminDashboard from './pages/admin/Dashboard';
 import TeacherManager from './pages/admin/TeacherManager';
+import Timetable from './pages/teacher/Timetable';
 import { useAuthStore } from './store/authStore';
 
 function ProtectedRoute({ children, allowedRole }: { children: React.ReactNode; allowedRole: 'teacher' | 'admin' }) {
@@ -83,6 +84,15 @@ function App() {
               </ProtectedRoute>
             }
           />
+           <Route
+            path="timetable"
+            element={
+              <ProtectedRoute allowedRole="teacher">
+                <Timetable />
+              </ProtectedRoute>
+            }
+          />         
+
           <Route
             path="teachers"
             element={

@@ -19,31 +19,29 @@ export default function SyllabusManager() {
   const [teacherId, setTeacherId] = useState<string | null>(null); // Store the teacher's ID
 
   // Fetch Teacher ID on component mount
-  // Fetch Teacher ID on component mount
-useEffect(() => {
-  if (user?.id) fetchTeacherId();
-}, [user?.id]);
+  useEffect(() => {
+    if (user?.id) fetchTeacherId();
+  }, [user?.id]);
 
-// Fetch the teacher document and get the document ID
-const fetchTeacherId = async () => {
-  try {
-    if (!user?.id) {
-      console.error('User ID is not available');
-      return;
+  const fetchTeacherId = async () => {
+    try {
+      if (!user?.id) {
+        console.error('User ID is not available');
+        return;
+      }
+
+      const teacherRef = doc(db, 'teachers', user.id); // Pass `user.id` directly since it's guaranteed to be a string now
+      const teacherDoc = await getDoc(teacherRef);
+
+      if (teacherDoc.exists()) {
+        setTeacherId(teacherDoc.id); // Store the teacher's document ID
+      } else {
+        console.error('Teacher document does not exist.');
+      }
+    } catch (error) {
+      console.error('Error fetching teacher ID:', error);
     }
-
-    const teacherRef = doc(db, 'teachers', user.id); // Pass `user.id` directly since it's guaranteed to be a string now
-    const teacherDoc = await getDoc(teacherRef);
-
-    if (teacherDoc.exists()) {
-      setTeacherId(teacherDoc.id); // Store the teacher's document ID
-    } else {
-      console.error('Teacher document does not exist.');
-    }
-  } catch (error) {
-    console.error('Error fetching teacher ID:', error);
-  }
-};
+  };
 
   // Load syllabus entries for the logged-in teacher
   useEffect(() => {
@@ -51,7 +49,7 @@ const fetchTeacherId = async () => {
   }, [teacherId]);
 
   const fetchSyllabusEntries = async () => {
-    if (!teacherId) return; // Ensure teacherId is available
+    if (!teacherId) return;
 
     try {
       const syllabusRef = collection(db, 'syllabus');
@@ -69,7 +67,6 @@ const fetchTeacherId = async () => {
     }
   };
 
-  // Open modal for adding or editing a syllabus entry
   const openModal = (entry: SyllabusEntry | null = null) => {
     if (entry) {
       setIsEditMode(true);
@@ -91,13 +88,11 @@ const fetchTeacherId = async () => {
     setIsModalOpen(true);
   };
 
-  // Add or update a syllabus entry
   const saveEntry = async () => {
-    if (!teacherId) return; // Ensure teacherId is available
+    if (!teacherId) return;
 
     try {
       if (isEditMode) {
-        // Update existing syllabus entry
         const entryRef = doc(db, 'syllabus', formData.id);
         await updateDoc(entryRef, {
           subject: formData.subject,
@@ -106,9 +101,8 @@ const fetchTeacherId = async () => {
           lastUpdated: new Date().toISOString(),
         });
       } else {
-        // Add new syllabus entry
         const newEntry = {
-          teacherId, // Use the teacher's ID
+          teacherId,
           subject: formData.subject,
           topic: formData.topic,
           completionStatus: formData.completionStatus,
@@ -117,19 +111,18 @@ const fetchTeacherId = async () => {
         await addDoc(collection(db, 'syllabus'), newEntry);
       }
 
-      fetchSyllabusEntries(); // Refresh syllabus entries
+      fetchSyllabusEntries();
       setIsModalOpen(false);
     } catch (error) {
       console.error('Error saving entry:', error);
     }
   };
 
-  // Delete a syllabus entry
   const deleteEntry = async (id: string) => {
     try {
       const entryRef = doc(db, 'syllabus', id);
       await deleteDoc(entryRef);
-      fetchSyllabusEntries(); // Refresh syllabus entries
+      fetchSyllabusEntries();
     } catch (error) {
       console.error('Error deleting entry:', error);
     }
@@ -138,8 +131,16 @@ const fetchTeacherId = async () => {
   return (
     <div className="space-y-6">
       {/* Header Section */}
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-900">Syllabus Management</h1>
+      <div className="header-container flex justify-between items-center px-4 sm:px-0">
+        <div className="flex items-center space-x-4">
+          <button
+            className="p-2 rounded-md hover:bg-gray-200 transition-all md:hidden"
+            aria-label="Menu"
+          >
+         
+          </button>
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">Syllabus Management</h1>
+        </div>
         <button
           onClick={() => openModal()}
           className="flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-teal-500 text-white rounded-md hover:opacity-90 transition-opacity duration-300"

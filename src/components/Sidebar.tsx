@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
-import { BookOpen, Clock, FileText, Users, LogOut } from 'lucide-react';
+import { BookOpen, Clock, FileText, Users, LogOut, Timer } from 'lucide-react';
 
 export default function Sidebar() {
   const { user, logout } = useAuthStore();
@@ -12,7 +12,10 @@ export default function Sidebar() {
     { to: '/syllabus', icon: BookOpen, text: 'Syllabus' },
     { to: '/classes', icon: Clock, text: 'Classes' },
     { to: '/documents', icon: FileText, text: 'Documents' },
-    { to: '/publication', icon: FileText, text: 'Publication' },
+    { to: '/publications', icon: FileText, text: 'Publications' },
+    { to: '/timetable', icon: FileText, text: 'Timetable' },
+
+    
 
   ];
 

@@ -241,93 +241,93 @@ const TeacherDashboard = () => {
 
 
 
-      {/* Editable Modal */}
-      {isEditMode && teacherDetails && (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50 z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
-            <h2 className="text-xl font-semibold mb-4">Edit Profile</h2>
+{/* Editable Modal */}
+{isEditMode && teacherDetails && (
+  <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50 z-50">
+    <div className="bg-white p-6 rounded-lg shadow-lg w-11/12 sm:w-96 md:w-1/3">
+      <h2 className="text-xl font-semibold mb-4">Edit Profile</h2>
 
-            {/* Editable Fields */}
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">Name</label>
-              <input
-                type="text"
-                value={editedName}
-                readOnly
-                onChange={(e) => setEditedName(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">Email</label>
-              <input
-                type="email"
-                value={editedEmail}
-                readOnly
-                onChange={(e) => setEditedEmail(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">Department</label>
-              <input
-                type="text"
-                value={editedDepartment}
-                readOnly
-                onChange={(e) => setEditedDepartment(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">Join Date</label>
-              <input
-                type="text"
-                value={editedJoinDate}
-                readOnly
-                onChange={(e) => setEditedJoinDate(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">Password</label>
-              <div className="relative">
-                <input
-                  type={showPassword ? 'text' : 'password'} // Toggle password visibility
-                  value={editedPassword}
-                  onChange={(e) => setEditedPassword(e.target.value)}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
-                />
-                {/* Eye toggle */}
-                <div
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer"
-                  onClick={togglePasswordVisibility}
-                >
-                  {showPassword ? (
-                    <EyeOff className="w-5 h-5 text-gray-500" />
-                  ) : (
-                    <Eye className="w-5 h-5 text-gray-500" />
-                  )}
-                </div>
-              </div>
-            </div>
-
-            <div className="flex justify-end space-x-4">
-              <button
-                className="bg-blue-500 text-white px-4 py-2 rounded-md"
-                onClick={handleSaveChanges}
-              >
-                Save
-              </button>
-              <button
-                className="bg-gray-300 text-gray-800 px-4 py-2 rounded-md"
-                onClick={toggleEditMode}
-              >
-                Cancel
-              </button>
-            </div>
+      {/* Editable Fields */}
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700">Name</label>
+        <input
+          type="text"
+          value={editedName}
+          readOnly
+          onChange={(e) => setEditedName(e.target.value)}
+          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+        />
+      </div>
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700">Email</label>
+        <input
+          type="email"
+          value={editedEmail}
+          readOnly
+          onChange={(e) => setEditedEmail(e.target.value)}
+          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+        />
+      </div>
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700">Department</label>
+        <input
+          type="text"
+          value={editedDepartment}
+          readOnly
+          onChange={(e) => setEditedDepartment(e.target.value)}
+          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+        />
+      </div>
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700">Join Date</label>
+        <input
+          type="text"
+          value={editedJoinDate}
+          readOnly
+          onChange={(e) => setEditedJoinDate(e.target.value)}
+          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+        />
+      </div>
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700">Password</label>
+        <div className="relative">
+          <input
+            type={showPassword ? 'text' : 'password'} // Toggle password visibility
+            value={editedPassword}
+            onChange={(e) => setEditedPassword(e.target.value)}
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+          />
+          {/* Eye toggle */}
+          <div
+            className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer"
+            onClick={togglePasswordVisibility}
+          >
+            {showPassword ? (
+              <EyeOff className="w-5 h-5 text-gray-500" />
+            ) : (
+              <Eye className="w-5 h-5 text-gray-500" />
+            )}
           </div>
         </div>
-      )}
+      </div>
+
+      <div className="flex justify-end space-x-4">
+        <button
+          className="bg-blue-500 text-white px-4 py-2 rounded-md"
+          onClick={handleSaveChanges}
+        >
+          Save
+        </button>
+        <button
+          className="bg-gray-300 text-gray-800 px-4 py-2 rounded-md"
+          onClick={toggleEditMode}
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+)}
 
       {/* Statistics Section */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
