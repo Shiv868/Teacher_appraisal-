@@ -34,3 +34,13 @@ export interface Document {
   description: string;
   url: string;
 }
+
+export interface publications {
+  id: string;
+  teacherId: string;
+  title: string;
+  description: string;
+  type: string;
+  publishDate: string;
+  url: string;
+}

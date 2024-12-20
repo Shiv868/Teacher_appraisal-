@@ -6,6 +6,7 @@ import TeacherDashboard from './pages/teacher/Dashboard';
 import SyllabusManager from './pages/teacher/SyllabusManager';
 import ClassTracker from './pages/teacher/ClassTracker';
 import DocumentManager from './pages/teacher/DocumentManager';
+import PublicationManager from './pages/teacher/publications';
 import AdminDashboard from './pages/admin/Dashboard';
 import TeacherManager from './pages/admin/TeacherManager';
 import { useAuthStore } from './store/authStore';
@@ -71,6 +72,14 @@ function App() {
             element={
               <ProtectedRoute allowedRole="teacher">
                 <DocumentManager />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="publications"
+            element={
+              <ProtectedRoute allowedRole="teacher">
+                <PublicationManager />
               </ProtectedRoute>
             }
           />
