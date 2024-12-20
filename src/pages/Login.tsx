@@ -75,7 +75,11 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-4">
+    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-4"
+    style={{
+      background: 'linear-gradient(to bottom,rgb(240, 248, 247),rgb(90, 179, 221))',
+    }}>
+      
       {/* Login Type Selector */}
       <div className="flex space-x-4 mb-8">
         <button
@@ -112,9 +116,13 @@ export default function Login() {
 
       {/* Login Form */}
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-        <div className="flex justify-center mb-6">
-          <LogIn className="w-12 h-12 text-blue-600" />
-        </div>
+      <div className="flex justify-center mb-6">
+        <img 
+          src="../public/vishnu_logo.png" 
+          alt="Login Icon" 
+          className="w-20 h-20" 
+        />
+      </div>
 
         <h2 className="text-2xl font-bold text-center text-gray-900 mb-2">
           {activeTab === 'teacher' ? 'Teacher Login' : 'Admin Login'}
