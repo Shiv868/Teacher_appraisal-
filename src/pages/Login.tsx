@@ -4,6 +4,7 @@ import { useAuthStore } from '../store/authStore';
 import { LogIn, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import { db } from "../config/firebaseConfig"; 
 import { collection, query, where, getDocs } from 'firebase/firestore';
+import vishnu_logo from '../../public/vishnu_logo.png';
 
 // Component
 export default function Login() {
@@ -118,7 +119,7 @@ export default function Login() {
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
       <div className="flex justify-center mb-6">
         <img 
-          src="../public/vishnu_logo.png" 
+          src={vishnu_logo}
           alt="Login Icon" 
           className="w-20 h-20" 
         />
