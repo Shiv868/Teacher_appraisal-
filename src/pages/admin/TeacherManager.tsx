@@ -207,6 +207,23 @@ export default function TeacherManager() {
 
   return (
     <div className="space-y-6">
+       <style>{`
+        @media (max-width: 768px) {
+          .space-y-6 {
+            padding: 1rem;
+          }
+          .flex.justify-between {
+            flex-wrap: wrap;
+            gap: 1rem;
+          }
+          .grid.gap-6 {
+            grid-template-columns: 1fr;
+          }
+          .flex-wrap.gap-4 {
+            flex-direction: column;
+          }
+        }
+      `}</style>
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-gray-900">Manage Teachers</h1>
         <button
